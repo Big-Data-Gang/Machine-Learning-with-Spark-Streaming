@@ -233,6 +233,7 @@ if __name__ == '__main__':
     input_file = args.file
     batch_size = args.batch_size
     endless = args.endless
+    print(input_file)
 
     tcp_connection, _ = connectTCP()
 
@@ -243,6 +244,7 @@ if __name__ == '__main__':
         _function = streamPokemonDataset
     elif input_file in ["crime", "sentiment", "spam"]:
         _function = streamDataset
+        print("Well, yeah")
     # elif input_file == "my dataset":
     #     _function = streamMyDataset
     else:

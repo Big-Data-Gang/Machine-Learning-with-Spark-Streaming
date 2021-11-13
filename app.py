@@ -1,16 +1,66 @@
+#! /usr/bin/python3
+
+TCP_IP = "localhost"
+TCP_PORT = 6100
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 
-# Creating a Spark Context
-sc = SparkContext()
-# Creating a Spark Streaming Context
-stream = StreamingContext(sparkContext= sc, batchDuration=1)
-# Creating a DStream
-text = stream.socketTextStream('localhost', 6100)
+# ! preferably do in method 2
 
-# Print
-text.pprint()
+"""
 
-# Start and stop
-stream.start()
-stream.awaitTerminationOrTimeout()
+ # --- way 1 ---
+import findspark
+findspark.init()
+from pyspark import SparkContext
+from pyspark.streaming import StreamingContext
+sc = SparkContext(appName="tweetStream")
+# Create a local StreamingContext with batch interval of 0.5 second
+ssc = StreamingContext(sc, 0.5)
+# Create a DStream that conencts to hostname:port
+lines = ssc.socketTextStream(TCP_IP, TCP_PORT)
+
+# Split Tweets
+words = lines.flatMap(lambda s: s.lower().split("__end"))
+# Print the first ten elements of each DStream RDD to the console
+# print("words.pprint() >> ", end = " ")
+words.pprint()
+# print("<< words.pprint() ", end = "||||||\n")
+# Start computing
+ssc.start()
+# print("ssc.start() >>>>", end = " ")
+# print(ssc)
+# print("<<<< ssc.start()", end = " ------\n")
+# Wait for termination
+ssc.awaitTermination()
+"""
+from pyspark import SparkContext
+from pyspark.sql.session import SparkSession
+from pyspark.streaming import StreamingContext
+from pyspark.sql import Row
+
+
+sc = SparkContext(appName="tweetStream")
+ssc = StreamingContext(sc, batchDuration= 3)
+spark = SparkSession(sc)
+
+
+def predict(tweet_text):
+	# the formatting isnt perfect, somewhat confusing
+	print(type(tweet_text))
+	try:
+		print(tweet_text.collect())
+	except Exception as E: 
+		print('failed', E)
+ 
+lines = ssc.socketTextStream(TCP_IP, TCP_PORT)
+
+words = lines.flatMap(lambda line : line.lower().split("\n"))
+
+words.foreachRDD(predict)
+
+# Start the computation
+ssc.start()             
+
+#wait till over
+ssc.awaitTermination()  
