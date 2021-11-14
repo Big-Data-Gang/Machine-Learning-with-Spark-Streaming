@@ -45,7 +45,7 @@ def predict(tweet_text):
 	# predict the sentiment of the tweet
 
 	# the formatting isnt perfect, somewhat confusing
-	tweet_text = tweet_text.replace("__end", "")
+	# tweet_text = tweet_text.replace("__end", "")
 	# print(type(tweet_text))
 	try:
 		print(tweet_text.collect())
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 	lines = ssc.socketTextStream(TCP_IP, TCP_PORT)
 
 	words = lines.flatMap(lambda line : line.lower().split("\n"))
-
+	# its wrong
 	words.foreachRDD(predict)
 
 	# Start the computation
