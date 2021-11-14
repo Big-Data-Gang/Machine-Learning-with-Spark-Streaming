@@ -29,4 +29,4 @@ if __name__ == "__main__":
 	ssc.start()             
 
 	#wait till over
-	ssc.awaitTermination()
+	ssc.awaitTermination(timeout=200)
