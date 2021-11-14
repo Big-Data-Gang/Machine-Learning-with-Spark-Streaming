@@ -131,4 +131,4 @@ dmypy.json
 # Datasets
 test.csv
 train.csv
-output.txt
+./src/output.txt

@@ -48,23 +48,23 @@ def predict(tweet_text):
 	# tweet_text = tweet_text.replace("__end", "")
 	# print(type(tweet_text))
 	try:
-		print(tweet_text.collect())
+		print(tweet_text)
 	except Exception as E: 
 		print('failed', E)
 
 if __name__ == "__main__":
 	sc = SparkContext(appName="tweetStream")
 	ssc = StreamingContext(sc, batchDuration= 3)
-	spark = SparkSession(sc)
+
 
 	lines = ssc.socketTextStream(TCP_IP, TCP_PORT)
 
 	words = lines.flatMap(lambda line : line.lower().split("\n"))
-	# its wrong
+	
 	words.foreachRDD(predict)
 
 	# Start the computation
 	ssc.start()             
 
 	#wait till over
-	ssc.awaitTermination()  
+	ssc.awaitTermination()
