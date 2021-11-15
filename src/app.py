@@ -8,24 +8,15 @@ from pyspark.sql.session import SparkSession
 from pyspark.streaming import StreamingContext
 from pyspark.sql import Row
 import json
-from pyspark.sql.types import StructType,StructField, StringType
-
-# Dataframe Schema
-schema = StructType([
-  StructField('sentiment', StringType(), True),
-  StructField('text', StringType(), True),
-  ])
-
 
 
 def process(rdd):
+	global count
 	# Array of elements of the dataset
 	sent = rdd.collect()
 
 	if len(sent) > 0:
 		df = spark.createDataFrame(data=json.loads(sent[0]).values(), schema=['sentiment', 'tweet'])
-		df.show()
-		
 
 
 if __name__ == "__main__":
@@ -46,3 +37,4 @@ if __name__ == "__main__":
 
 	#wait till over
 	ssc.awaitTermination()
+	ssc.stop(stopGraceFully=True)
