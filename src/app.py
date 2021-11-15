@@ -17,7 +17,7 @@ def process(rdd):
 
 	if len(sent) > 0:
 		df = spark.createDataFrame(data=json.loads(sent[0]).values(), schema=['sentiment', 'tweet'])
-
+		df.show(truncate=False)
 
 if __name__ == "__main__":
 	sc = SparkContext(appName="tweetStream")
