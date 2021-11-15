@@ -9,6 +9,8 @@ from pyspark.streaming import StreamingContext
 from pyspark.sql import Row
 import json
 
+count = 0
+
 
 def process(rdd):
 	global count
@@ -17,7 +19,9 @@ def process(rdd):
 
 	if len(sent) > 0:
 		df = spark.createDataFrame(data=json.loads(sent[0]).values(), schema=['sentiment', 'tweet'])
-		df.show(truncate=False)
+		#df.show(truncate=False)
+		count += df.count()
+		print(count)
 
 if __name__ == "__main__":
 	sc = SparkContext(appName="tweetStream")

@@ -179,7 +179,7 @@ def streamCSVFile(tcp_connection, input_file):    # stream a CSV file to Spark
     df = pd.read_csv(input_file)  # load the entire dataset
     values = df.values.tolist()  # obtain the values of the dataset
     # loop through batches of size batch_size lines
-    for i in tqdm(range(0, len(values)-batch_size+1, batch_size)):
+    for i in tqdm(range(0, len(values)-batch_size+2, batch_size)):
         send_data = values[i:i+batch_size]  # load batch of rows
         payload = dict()    # create a payload
         # iterate over the batch
@@ -198,7 +198,7 @@ def streamCSVFile(tcp_connection, input_file):    # stream a CSV file to Spark
             print("Either batch size is too big for the dataset or the connection was closed")
         except Exception as error_message:
             print(f"Exception thrown but was handled: {error_message}")
-        time.sleep(1)
+        time.sleep(5)
 
 
 def streamFile(tcp_connection, input_file):  # stream a newline delimited file to Spark
