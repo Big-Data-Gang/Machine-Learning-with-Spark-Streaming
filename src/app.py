@@ -18,36 +18,31 @@ schema = StructType([
 
 
 
-def predict(tweet_text):
-	
-	sent = tweet_text.collect()
-	if len(sent) > 0:
-		# Get dictionary
-		print(json.loads(sent[0]))
-		# Create empty dataframe
-		df = spark.createDataFrame(sc.emptyRDD, schema=schema)
+def process(rdd):
+	# Array of elements of the dataset
+	sent = rdd.collect()
 
-		# Iterate and get new df
-		# for i in d:
-		# 	print(d[i])
-		# print(d)
-		# df.show()
-	else:
-		pass
+	if len(sent) > 0:
+		df = spark.createDataFrame(data=json.loads(sent[0]).values(), schema=['sentiment', 'tweet'])
+		df.show()
+		
+
 
 if __name__ == "__main__":
 	sc = SparkContext(appName="tweetStream")
 	ssc = StreamingContext(sc, batchDuration= 3)
 	spark = SparkSession.builder.getOrCreate()
 
+	# Creates a DStream
 	lines = ssc.socketTextStream(TCP_IP, TCP_PORT)
 
+	# Transformation applied to each DStream iteration
 	words = lines.flatMap(lambda line : line.lower().split("\n"))
 	
-	words.foreachRDD(predict)
+	words.foreachRDD(process)
 
 	# Start the computation
 	ssc.start()             
 
 	#wait till over
-	ssc.awaitTermination(timeout=200)
+	ssc.awaitTermination()
