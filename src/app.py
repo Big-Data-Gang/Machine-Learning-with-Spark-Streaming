@@ -7,6 +7,9 @@ from pyspark import SparkContext
 from pyspark.sql.session import SparkSession
 from pyspark.streaming import StreamingContext
 from pyspark.sql import Row
+from sparknlp import DocumentAssembler
+from sparknlp.annotator import *
+from pyspark.ml import Pipeline
 import json
 
 count = 0
@@ -19,9 +22,51 @@ def process(rdd):
 
 	if len(sent) > 0:
 		df = spark.createDataFrame(data=json.loads(sent[0]).values(), schema=['sentiment', 'tweet'])
-		#df.show(truncate=False)
-		count += df.count()
-		print(count)
+		df.show(truncate=False)
+		# count += df.count()
+		# print(count)
+		
+def preprocess():
+	documentAssembler = DocumentAssembler()\
+		.setInputCol("sentiment")\
+		.setOutputCol("document")
+
+	tokenizer = Tokenizer() \
+		.setInputCols(["document"]) \
+		.setOutputCol("token")
+
+	normalizer = Normalizer() \
+		.setInputCols(["token"]) \
+		.setOutputCol("normalized")\
+		.setLowercase(True)\
+		.setCleanupPatterns(["[^\w\d\s]"])
+
+	stopwords_cleaner = StopWordsCleaner()\
+		.setInputCols("normalized")\
+		.setOutputCol("cleanTokens")\
+		.setCaseSensitive(False)
+
+	stemmer = Stemmer() \
+		.setInputCols(["cleanTokens"]) \
+		.setOutputCol("stem")
+
+	lemmatizer = Lemmatizer() \
+		.setInputCols(["stem"]) \
+		.setOutputCol("lemma") \
+		.setDictionary("lemmas.txt", value_delimiter ="\t", key_delimiter = "->")
+
+	nlpPipeline = Pipeline(stages=[
+		documentAssembler, 
+		tokenizer,
+		normalizer,
+		stopwords_cleaner,
+		stemmer,
+		lemmatizer
+	])
+
+	empty_df = spark.createDataFrame([['']]).toDF("text")
+
+	pipelineModel = nlpPipeline.fit(empty_df)
 
 if __name__ == "__main__":
 	sc = SparkContext(appName="tweetStream")
@@ -40,5 +85,5 @@ if __name__ == "__main__":
 	ssc.start()             
 
 	#wait till over
-	ssc.awaitTermination(timeout=100)
+	ssc.awaitTermination(timeout=200)
 	ssc.stop(stopGraceFully=True)
