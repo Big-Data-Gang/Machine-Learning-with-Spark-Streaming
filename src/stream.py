@@ -49,7 +49,7 @@ def sendCIFARBatchFileToSpark(tcp_connection, input_batch_file):
     # setting feature size to form the payload later
     feature_size = len(data[0])
     # iterate over batches of size batch_size
-    for image_index in tqdm(range(0, len(data)-batch_size+1, batch_size)):
+    for image_index in tqdm(range(0, len(data)-batch_size+2, batch_size)):
         # load batch of images
         image_data_batch = data[image_index:image_index+batch_size]
         image_label = labels[image_index:image_index +
@@ -69,7 +69,7 @@ def sendCIFARBatchFileToSpark(tcp_connection, input_batch_file):
             print("Either batch size is too big for the dataset or the connection was closed")
         except Exception as error_message:
             print(f"Exception thrown but was handled: {error_message}")
-        time.sleep(1)
+        time.sleep(5)
 
 
 def streamCIFARDataset(tcp_connection, dataset_type='cifar'):
@@ -84,7 +84,7 @@ def streamCIFARDataset(tcp_connection, dataset_type='cifar'):
     ]
     for batch in CIFAR_BATCHES:
         sendCIFARBatchFileToSpark(tcp_connection, batch)
-        time.sleep(1)
+        time.sleep(5)
 
 
 def sendPokemonBatchFileToSpark(tcp_connection, input_batch_file):
@@ -96,7 +96,7 @@ def sendPokemonBatchFileToSpark(tcp_connection, input_batch_file):
     data = batch_data['img']
     labels = batch_data['label']
     # iterate over batches of size batch_size
-    for image_index in tqdm(range(0, len(data)-batch_size+1, batch_size)):
+    for image_index in tqdm(range(0, len(data)-batch_size+2, batch_size)):
         # load batch of images
         image_data_batch = data[image_index:image_index+batch_size]
         image_label = labels[image_index:image_index +
@@ -116,7 +116,7 @@ def sendPokemonBatchFileToSpark(tcp_connection, input_batch_file):
             print("Either batch size is too big for the dataset or the connection was closed")
         except Exception as error_message:
             print(f"Exception thrown but was handled: {error_message}")
-        time.sleep(1)
+        time.sleep(5)
             
 
 def streamPokemonDataset(tcp_connection, dataset_type='pokemon'):
@@ -131,7 +131,7 @@ def streamPokemonDataset(tcp_connection, dataset_type='pokemon'):
     ]
     for batch in POKEMON_BATCHES:
         sendPokemonBatchFileToSpark(tcp_connection, batch)
-        time.sleep(1)
+        time.sleep(5)
 
 
 def streamDataset(tcp_connection, dataset_type):    # function to stream a dataset
@@ -144,7 +144,7 @@ def streamDataset(tcp_connection, dataset_type):    # function to stream a datas
     ]
     for dataset in DATASETS:
         streamCSVFile(tcp_connection, f'{dataset_type}/{dataset}.csv')
-        time.sleep(1)
+        time.sleep(5)
 
 
 def streamCSVFile(tcp_connection, input_file):    # stream a CSV file to Spark
@@ -213,7 +213,7 @@ def streamFile(tcp_connection, input_file):  # stream a newline delimited file t
         data = file.readlines()  # open the file and read every line
         total_lines = len(data)
         # loop through batches of size batch_size lines
-        for i in tqdm(range(0, total_lines-batch_size+1, batch_size)):
+        for i in tqdm(range(0, total_lines-batch_size+2, batch_size)):
             send_data = data[i:i+batch_size]    # load batch of lines
             # encode the payload and add a newline character (do not forget the newline in your dataset)
             send_batch = (json.dumps(send_data) + '\n').encode()
@@ -223,7 +223,7 @@ def streamFile(tcp_connection, input_file):  # stream a newline delimited file t
                 print("Either batch size is too big for the dataset or the connection was closed")
             except Exception as error_message:
                 print(f"Exception thrown but was handled: {error_message}")
-            time.sleep(1)
+            time.sleep(5)
 
 
 if __name__ == '__main__':
@@ -233,7 +233,6 @@ if __name__ == '__main__':
     input_file = args.file
     batch_size = args.batch_size
     endless = args.endless
-    print(input_file)
 
     tcp_connection, _ = connectTCP()
 
@@ -244,7 +243,6 @@ if __name__ == '__main__':
         _function = streamPokemonDataset
     elif input_file in ["crime", "sentiment", "spam"]:
         _function = streamDataset
-        
     # elif input_file == "my dataset":
     #     _function = streamMyDataset
     else:
