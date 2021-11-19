@@ -10,3 +10,6 @@ Team:
 
 
 References - [Intructions](https://cloud-computing-big-data.github.io/mlss.html) and [files](https://drive.google.com/drive/folders/1hKe06r4TYxqQOwEOUrk6i9e15Vt2EZGC)
+
+* IMPORTANT:
+Run `wget https://repo1.maven.org/maven2/com/johnsnowlabs/nlp/spark-nlp_2.12/3.3.2/spark-nlp_2.12-3.3.2.jar -P $SPARK_HOME/jars` to install the spark-nlp jars package

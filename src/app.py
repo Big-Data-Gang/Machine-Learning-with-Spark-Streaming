@@ -22,13 +22,14 @@ def process(rdd):
 
 	if len(sent) > 0:
 		df = spark.createDataFrame(data=json.loads(sent[0]).values(), schema=['sentiment', 'tweet'])
+		df = preprocess(df)
 		df.show(truncate=False)
 		# count += df.count()
 		# print(count)
 		
-def preprocess():
+def preprocess(df):
 	documentAssembler = DocumentAssembler()\
-		.setInputCol("sentiment")\
+		.setInputCol("tweet")\
 		.setOutputCol("document")
 
 	tokenizer = Tokenizer() \
@@ -53,7 +54,7 @@ def preprocess():
 	lemmatizer = Lemmatizer() \
 		.setInputCols(["stem"]) \
 		.setOutputCol("lemma") \
-		.setDictionary("lemmas.txt", value_delimiter ="\t", key_delimiter = "->")
+		.setDictionary("src/lemmas.txt", value_delimiter ="\t", key_delimiter = "->")
 
 	nlpPipeline = Pipeline(stages=[
 		documentAssembler, 
@@ -64,9 +65,9 @@ def preprocess():
 		lemmatizer
 	])
 
-	empty_df = spark.createDataFrame([['']]).toDF("text")
-
-	pipelineModel = nlpPipeline.fit(empty_df)
+	pipelineModel = nlpPipeline.fit(df)
+	result = pipelineModel.transform(df)
+	return result
 
 if __name__ == "__main__":
 	sc = SparkContext(appName="tweetStream")
@@ -85,5 +86,5 @@ if __name__ == "__main__":
 	ssc.start()             
 
 	#wait till over
-	ssc.awaitTermination(timeout=200)
+	ssc.awaitTermination()
 	ssc.stop(stopGraceFully=True)
