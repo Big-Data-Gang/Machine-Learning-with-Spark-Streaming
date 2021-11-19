@@ -37,6 +37,7 @@ def spellCheck(text, dict_path):
 			text.replace(i, suggestions[0])
 		except:
 			continue
+	return text
 def process(rdd):
 	global count
 	# Array of elements of the dataset
@@ -87,6 +88,7 @@ def preprocess(df):
 		stopwords_cleaner,
 		stemmer,
 		lemmatizer
+		# TODO: need to add caller for spellChecker in the pipeline and create a word_dict to be sent to the same
 	])
 
 	pipelineModel = nlpPipeline.fit(df)
