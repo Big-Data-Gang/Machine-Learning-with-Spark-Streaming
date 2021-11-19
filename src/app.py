@@ -11,10 +11,32 @@ from sparknlp import DocumentAssembler
 from sparknlp.annotator import *
 from pyspark.ml import Pipeline
 import json
+import pkg_resources
+from symspellpy import SymSpell
 
 count = 0
 
-
+def spellCheck(text, dict_path):
+	sym_spell = SymSpell()
+	dictionary_path = pkg_resources.resource_filename(
+	    	"symspellpy", 
+		dict_path
+	)
+	sym_spell.load_dictionary(dictionary_path, 0, 1)
+	input_term = None
+	for i in text:
+		try:
+		
+			input_term = i
+			
+			# max edit distance per lookup
+			# (max_edit_distance_lookup <= max_dictionary_edit_distance)
+			suggestions = sym_spell.lookup(input_term, Verbosity.CLOSEST,
+				               max_edit_distance=2, include_unknown=True)
+			# display suggestion term, term frequency, and edit distance
+			text.replace(i, suggestions[0])
+		except:
+			continue
 def process(rdd):
 	global count
 	# Array of elements of the dataset
@@ -73,6 +95,7 @@ def preprocess(df):
 
 if __name__ == "__main__":
 	sc = SparkContext(appName="tweetStream")
+	sc.setLogLevel("ERROR") # remove useless logs clogging the STDOUT
 	ssc = StreamingContext(sc, batchDuration= 3)
 	spark = SparkSession.builder.getOrCreate()
 
@@ -83,10 +106,11 @@ if __name__ == "__main__":
 	words = lines.flatMap(lambda line : line.lower().split("\n"))
 	
 	words.foreachRDD(process)
-
+	
+	
 	# Start the computation
-	ssc.start()             
-
+	ssc.start()
+	
 	#wait till over
 	ssc.awaitTermination()
 	ssc.stop(stopGraceFully=True)
