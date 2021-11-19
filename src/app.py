@@ -28,9 +28,11 @@ def process(rdd):
 		# print(count)
 		
 def preprocess(df):
+	# Cleanup mode is set to shrink
 	documentAssembler = DocumentAssembler()\
 		.setInputCol("tweet")\
-		.setOutputCol("document")
+		.setOutputCol("document")\
+		.setCleanupMode("shrink")
 
 	tokenizer = Tokenizer() \
 		.setInputCols(["document"]) \
