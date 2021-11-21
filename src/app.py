@@ -8,36 +8,15 @@ from pyspark.sql.session import SparkSession
 from pyspark.streaming import StreamingContext
 from pyspark.sql import Row
 from sparknlp import DocumentAssembler
+import sparknlp
 from sparknlp.annotator import *
+from sparknlp.base import *
 from pyspark.ml import Pipeline
 import json
-import pkg_resources
-from symspellpy import SymSpell
+
 
 count = 0
 
-def spellCheck(text, dict_path):
-	sym_spell = SymSpell()
-	dictionary_path = pkg_resources.resource_filename(
-	    	"symspellpy", 
-		dict_path
-	)
-	sym_spell.load_dictionary(dictionary_path, 0, 1)
-	input_term = None
-	for i in text:
-		try:
-		
-			input_term = i
-			
-			# max edit distance per lookup
-			# (max_edit_distance_lookup <= max_dictionary_edit_distance)
-			suggestions = sym_spell.lookup(input_term, Verbosity.CLOSEST,
-				               max_edit_distance=2, include_unknown=True)
-			# display suggestion term, term frequency, and edit distance
-			text.replace(i, suggestions[0])
-		except:
-			continue
-	return text
 def process(rdd):
 	global count
 	# Array of elements of the dataset
@@ -67,6 +46,12 @@ def preprocess(df):
 		.setLowercase(True)\
 		.setCleanupPatterns(["[^\w\d\s]"])
 
+	# spellModel = ContextSpellCheckerModel\
+	# 	.pretrained()\
+	# 	.setInputCols("token")\
+	# 	.setOutputCol("checked")\
+
+
 	stopwords_cleaner = StopWordsCleaner()\
 		.setInputCols("normalized")\
 		.setOutputCol("cleanTokens")\
@@ -81,14 +66,18 @@ def preprocess(df):
 		.setOutputCol("lemma") \
 		.setDictionary("src/lemmas.txt", value_delimiter ="\t", key_delimiter = "->")
 
+	finisher = Finisher()\
+		.setInputCols('lemma')
+
 	nlpPipeline = Pipeline(stages=[
 		documentAssembler, 
 		tokenizer,
 		normalizer,
+		# spellModel,
 		stopwords_cleaner,
 		stemmer,
-		lemmatizer
-		# TODO: need to add caller for spellChecker in the pipeline and create a word_dict to be sent to the same
+		lemmatizer,
+		finisher
 	])
 
 	pipelineModel = nlpPipeline.fit(df)
