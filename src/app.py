@@ -16,6 +16,7 @@ import json
 from pyspark.sql.functions import *
 from pyspark.sql import functions as F
 from pyspark.sql.types import *
+from pyspark.mllib.feature import Word2Vec
 
 
 count = 0
@@ -42,6 +43,10 @@ def process(rdd):
 		# count += df.count()
 		# print(count)
 		
+		w2v = Word2Vec()
+		model = w2v.fit(df.rdd)
+		print(model)
+
 def preprocess(df):
 	# Cleanup mode is set to shrink
 
@@ -82,9 +87,9 @@ def preprocess(df):
 		.setOutputCol("lemma") \
 		.setDictionary("src/lemmas.txt", value_delimiter ="\t", key_delimiter = "->")
 
-	bert = BertSentenceEmbeddings.pretrained()\
-		.setInputCols('lemma')\
-		.setOutputCol('bert_embedding')
+	# bert = BertSentenceEmbeddings.pretrained()\
+	# 	.setInputCols('lemma')\
+	# 	.setOutputCol('bert_embedding')
 
 	nlpPipeline = Pipeline(stages=[
 		documentAssembler, 
@@ -94,7 +99,7 @@ def preprocess(df):
 		stopwords_cleaner,
 		stemmer,
 		lemmatizer,
-		bert
+		# bert
 	])
 
 	pipelineModel = nlpPipeline.fit(df)
