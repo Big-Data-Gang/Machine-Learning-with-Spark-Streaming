@@ -13,9 +13,22 @@ from sparknlp.annotator import *
 from sparknlp.base import *
 from pyspark.ml import Pipeline
 import json
+from pyspark.sql.functions import *
+from pyspark.sql import functions as F
+from pyspark.sql.types import *
 
 
 count = 0
+
+def regex(df):
+
+	df = df.withColumn('tweet', F.regexp_replace('tweet', r'http\S+', ''))
+	df = df.withColumn('tweet', F.regexp_replace('tweet', '@\w+', ''))
+	df = df.withColumn('tweet', F.regexp_replace('tweet', '#', ''))
+	df = df.withColumn('tweet', F.regexp_replace('tweet', 'RT', ''))
+	df = df.withColumn('tweet', F.regexp_replace('tweet', ':', ''))
+
+	return df
 
 def process(rdd):
 	global count
@@ -25,12 +38,15 @@ def process(rdd):
 	if len(sent) > 0:
 		df = spark.createDataFrame(data=json.loads(sent[0]).values(), schema=['sentiment', 'tweet'])
 		df = preprocess(df)
-		df.show(truncate=False)
+		df.select('lemma.result').show(truncate=False)
 		# count += df.count()
 		# print(count)
 		
 def preprocess(df):
 	# Cleanup mode is set to shrink
+
+	df = regex(df)
+
 	documentAssembler = DocumentAssembler()\
 		.setInputCol("tweet")\
 		.setOutputCol("document")\
@@ -77,7 +93,6 @@ def preprocess(df):
 		stopwords_cleaner,
 		stemmer,
 		lemmatizer,
-		finisher
 	])
 
 	pipelineModel = nlpPipeline.fit(df)
