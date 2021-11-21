@@ -38,7 +38,7 @@ def process(rdd):
 	if len(sent) > 0:
 		df = spark.createDataFrame(data=json.loads(sent[0]).values(), schema=['sentiment', 'tweet'])
 		df = preprocess(df)
-		df.select('lemma.result').show(truncate=False)
+		df.show(truncate=False)
 		# count += df.count()
 		# print(count)
 		
@@ -82,8 +82,9 @@ def preprocess(df):
 		.setOutputCol("lemma") \
 		.setDictionary("src/lemmas.txt", value_delimiter ="\t", key_delimiter = "->")
 
-	finisher = Finisher()\
-		.setInputCols('lemma')
+	bert = BertSentenceEmbeddings.pretrained()\
+		.setInputCols('lemma')\
+		.setOutputCol('bert_embedding')
 
 	nlpPipeline = Pipeline(stages=[
 		documentAssembler, 
@@ -93,6 +94,7 @@ def preprocess(df):
 		stopwords_cleaner,
 		stemmer,
 		lemmatizer,
+		bert
 	])
 
 	pipelineModel = nlpPipeline.fit(df)
@@ -109,7 +111,7 @@ if __name__ == "__main__":
 	lines = ssc.socketTextStream(TCP_IP, TCP_PORT)
 
 	# Transformation applied to each DStream iteration
-	words = lines.flatMap(lambda line : line.lower().split("\n"))
+	words = lines.flatMap(lambda line : line.split("\n"))
 	
 	words.foreachRDD(process)
 	
