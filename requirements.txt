@@ -4,4 +4,5 @@ tqdm==4.62.3
 argparse==1.4.0
 pyspark==3.2.0 
 sparknlp==1.0.0
+sklearn==0.0
 # all the required import for MLLib in spark
