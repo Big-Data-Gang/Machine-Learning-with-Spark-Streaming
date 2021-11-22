@@ -14,7 +14,29 @@ from pyspark.sql.types import *
 
 from pipeline import PreProcess
 
+from sklearn.naive_bayes import GaussianNB
+import pickle
+import numpy as np
 
+
+clf_pf = None
+def initClassifiers():
+	global clf_pf
+	clf_pf = GaussianNB() # defining globally
+
+def endClassifiers():
+	pickle.dump(clf_pf, open('NB.pkl', 'wb'))
+	print("pickling sucessful")
+
+def fitNB(df):
+	#clf = GaussianNB()
+	#clf.fit(X, Y)
+	#GaussianNB()
+	X = df.select("vector").rdd
+	Y = df.select("sentiment").rdd
+	clf_pf.partial_fit(X, Y, np.unique(Y))
+	print("fit one done")
+	
 def process(rdd):
 	# Array of elements of the dataset
 	sent = rdd.collect()
@@ -23,7 +45,8 @@ def process(rdd):
 		df = spark.createDataFrame(data=json.loads(sent[0]).values(), schema=['sentiment', 'tweet'])
 		pipe = PreProcess(df)
 		df = pipe()
-		df.show(truncate=False)
+		fitNB(df)
+		# df.show(truncate=False)
 		
 
 if __name__ == "__main__":
@@ -31,6 +54,7 @@ if __name__ == "__main__":
 	sc.setLogLevel("ERROR") # remove useless logs clogging the STDOUT
 	ssc = StreamingContext(sc, batchDuration= 3)
 	spark = SparkSession.builder.getOrCreate()
+	initClassifiers()
 
 	# Creates a DStream
 	lines = ssc.socketTextStream(TCP_IP, TCP_PORT)
@@ -47,3 +71,6 @@ if __name__ == "__main__":
 	#wait till over
 	ssc.awaitTermination()
 	ssc.stop(stopGraceFully=True)
+	
+	endClassifier()
+	

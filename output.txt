@@ -1,0 +1,2 @@
+[ WARN] Your hostname, ubuntu resolves to a loopback address: 127.0.1.1; using 192.168.58.131 instead (on interface ens33)
+[ WARN] Set SPARK_LOCAL_IP if you need to bind to another address
