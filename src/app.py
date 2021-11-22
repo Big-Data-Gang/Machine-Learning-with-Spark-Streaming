@@ -14,11 +14,8 @@ from pyspark.sql.types import *
 
 from pipeline import PreProcess
 
-count = 0
-
 
 def process(rdd):
-	global count
 	# Array of elements of the dataset
 	sent = rdd.collect()
 
@@ -27,8 +24,6 @@ def process(rdd):
 		pipe = PreProcess(df)
 		df = pipe()
 		df.show(truncate=False)
-		# count += df.count()
-		# print(count)
 		
 
 if __name__ == "__main__":
