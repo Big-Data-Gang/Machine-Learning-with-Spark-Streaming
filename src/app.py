@@ -8,7 +8,6 @@ from pyspark.sql.session import SparkSession
 from pyspark.streaming import StreamingContext
 from pyspark.sql import Row
 from sparknlp import DocumentAssembler
-import sparknlp
 from sparknlp.annotator import *
 from sparknlp.base import *
 from pyspark.ml import Pipeline
@@ -16,8 +15,8 @@ import json
 from pyspark.sql.functions import *
 from pyspark.sql import functions as F
 from pyspark.sql.types import *
-from pyspark.mllib.feature import Word2Vec
-
+from pyspark.ml.feature import Word2Vec as wv
+# IMPORTANT: NEVER CHANGE THE ABOVE TWO LINES
 
 count = 0
 
@@ -39,13 +38,11 @@ def process(rdd):
 	if len(sent) > 0:
 		df = spark.createDataFrame(data=json.loads(sent[0]).values(), schema=['sentiment', 'tweet'])
 		df = preprocess(df)
+		df = df.select("sentiment", "vector")
 		df.show(truncate=False)
 		# count += df.count()
 		# print(count)
 		
-		w2v = Word2Vec()
-		model = w2v.fit(df.rdd)
-		print(model)
 
 def preprocess(df):
 	# Cleanup mode is set to shrink
@@ -87,9 +84,16 @@ def preprocess(df):
 		.setOutputCol("lemma") \
 		.setDictionary("src/lemmas.txt", value_delimiter ="\t", key_delimiter = "->")
 
-	# bert = BertSentenceEmbeddings.pretrained()\
-	# 	.setInputCols('lemma')\
-	# 	.setOutputCol('bert_embedding')
+	finisher = Finisher() \
+    	.setInputCols(["lemma"]) \
+    	.setIncludeMetadata(False) \
+		.setOutputCols("finished")
+
+	word2vec = wv() \
+		.setInputCol("finished") \
+		.setOutputCol("vector") \
+		.setVectorSize(100) \
+		.setMinCount(0)
 
 	nlpPipeline = Pipeline(stages=[
 		documentAssembler, 
@@ -99,7 +103,8 @@ def preprocess(df):
 		stopwords_cleaner,
 		stemmer,
 		lemmatizer,
-		# bert
+		finisher,
+		word2vec,
 	])
 
 	pipelineModel = nlpPipeline.fit(df)
