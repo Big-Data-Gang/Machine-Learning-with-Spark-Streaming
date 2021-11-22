@@ -12,7 +12,9 @@ class PreProcess:
         self.df = df
         if self.df == None:
             return None
-        self.preprocess()
+
+    def __call__(self):
+        return self.preprocess()
 
     def regex(self):
 

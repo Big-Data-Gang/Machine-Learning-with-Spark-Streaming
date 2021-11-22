@@ -6,19 +6,13 @@ TCP_PORT = 6100
 from pyspark import SparkContext
 from pyspark.sql.session import SparkSession
 from pyspark.streaming import StreamingContext
-from pyspark.sql import Row
-from sparknlp import DocumentAssembler
 from sparknlp.annotator import *
 from sparknlp.base import *
-from pyspark.ml import Pipeline
 import json
 from pyspark.sql.functions import *
-from pyspark.sql import functions as F
 from pyspark.sql.types import *
-from pyspark.ml.feature import Word2Vec as wv
-# IMPORTANT: NEVER CHANGE THE ABOVE TWO LINES
 
-import pipeline
+from pipeline import PreProcess
 
 count = 0
 
@@ -30,7 +24,8 @@ def process(rdd):
 
 	if len(sent) > 0:
 		df = spark.createDataFrame(data=json.loads(sent[0]).values(), schema=['sentiment', 'tweet'])
-		df = pipeline.PreProcess(df)
+		pipe = PreProcess(df)
+		df = pipe()
 		df.show(truncate=False)
 		# count += df.count()
 		# print(count)
