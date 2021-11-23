@@ -43,14 +43,16 @@ def fitNB(df):
 	
 	
 def vectorize(df):
-	npArray = np.array(df.select('finished').collect())
-	print(npArray[0])
-	npArray = [i[0] for i in npArray]
-	print(npArray[0])
-	for i in npArray:
-		for j in i:
-			i = hv.fit_transform(j)
-	print(npArray[0])
+	# joined_df = df.withColumn('joined', array(col('finished')))
+	joined_df = df.withColumn('joined', concat_ws(' ', col('finished')))
+	docs = joined_df.select('joined').collect()
+
+	corpus_batch = [doc['joined'] for doc in docs]
+	# print(len(corpus), corpus)
+
+	vect = hv.fit_transform(corpus_batch)
+	print(vect.shape)
+
 def process(rdd):
 	# Array of elements of the dataset
 	sent = rdd.collect()
@@ -62,6 +64,7 @@ def process(rdd):
 		# vect = hv.fit_transform(df.select('finished').rdd.collect())
 		# print(vect)
 		vectorize(df)
+		# df.show()
 		
 		#fitNB(df)
 		#df.show(truncate=False)
