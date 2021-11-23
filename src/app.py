@@ -36,7 +36,7 @@ def endClassifiers():
 	pickle.dump(clf_pf, open('NB.pkl', 'wb'))
 	print("pickling sucessful")
 
-def fitNB(X, y):
+def fitSGD(X, y):
 	global count
 	#clf = GaussianNB()
 	#clf.fit(X, Y)
@@ -71,7 +71,7 @@ def process(rdd):
 		y = np.array(df.select('sentiment').collect())
 		y = np.reshape(y, (y.shape[0],))
 		# print(vect.shape, y.shape)
-		fitNB(vect, y)
+		fitSGD(vect, y)
 		#df.show(truncate=False)
 		
 
