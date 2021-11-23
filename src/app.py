@@ -17,6 +17,10 @@ from pipeline import PreProcess
 from sklearn.naive_bayes import GaussianNB
 import pickle
 import numpy as np
+from sklearn.feature_extraction.text import HashingVectorizer
+
+# Create HashingVectorizer instance
+hv = HashingVectorizer(lowercase=False)
 
 
 clf_pf = None
@@ -45,8 +49,10 @@ def process(rdd):
 		df = spark.createDataFrame(data=json.loads(sent[0]).values(), schema=['sentiment', 'tweet'])
 		pipe = PreProcess(df)
 		df = pipe()
-		fitNB(df)
-		# df.show(truncate=False)
+		vect = hv.transform(df.select('finished').rdd)
+		print(vect)
+		#fitNB(df)
+		#df.show(truncate=False)
 		
 
 if __name__ == "__main__":
@@ -72,5 +78,5 @@ if __name__ == "__main__":
 	ssc.awaitTermination()
 	ssc.stop(stopGraceFully=True)
 	
-	endClassifier()
+	endClassifiers()
 	

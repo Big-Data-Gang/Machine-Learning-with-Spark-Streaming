@@ -85,9 +85,9 @@ class PreProcess:
             stemmer,
             lemmatizer,
             finisher,
-            word2vec,
+            # word2vec,
         ])
 
         pipelineModel = nlpPipeline.fit(self.df)
         result = pipelineModel.transform(self.df)
-        return result.select("sentiment", "vector")
+        return result.select("sentiment", "finished")
