@@ -41,6 +41,16 @@ def fitNB(df):
 	clf_pf.partial_fit(X, Y, np.unique(Y))
 	print("fit one done")
 	
+	
+def vectorize(df):
+	npArray = np.array(df.select('finished').collect())
+	print(npArray[0])
+	npArray = [i[0] for i in npArray]
+	print(npArray[0])
+	for i in npArray:
+		for j in i:
+			i = hv.fit_transform(j)
+	print(npArray[0])
 def process(rdd):
 	# Array of elements of the dataset
 	sent = rdd.collect()
@@ -49,8 +59,10 @@ def process(rdd):
 		df = spark.createDataFrame(data=json.loads(sent[0]).values(), schema=['sentiment', 'tweet'])
 		pipe = PreProcess(df)
 		df = pipe()
-		vect = hv.transform(df.select('finished').rdd)
-		print(vect)
+		# vect = hv.fit_transform(df.select('finished').rdd.collect())
+		# print(vect)
+		vectorize(df)
+		
 		#fitNB(df)
 		#df.show(truncate=False)
 		
