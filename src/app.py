@@ -22,6 +22,10 @@ from sklearn.feature_extraction.text import HashingVectorizer
 # Create HashingVectorizer instance
 hv = HashingVectorizer(lowercase=False)
 
+# Setting np seed to get reproducible models
+np.random.seed(5)
+
+count = 0
 
 clf_pf = None
 def initClassifiers():
@@ -33,11 +37,14 @@ def endClassifiers():
 	print("pickling sucessful")
 
 def fitNB(X, y):
+	global count
 	#clf = GaussianNB()
 	#clf.fit(X, Y)
 	#GaussianNB()
 	clf_pf.partial_fit(X, y, np.unique(y))
-	print("fit one done")
+	print(f"Batch {count} Accuracy: ", clf_pf.score(X, y))
+	# print("fit one done")
+	count += 1
 	
 	
 def vectorize(df):
