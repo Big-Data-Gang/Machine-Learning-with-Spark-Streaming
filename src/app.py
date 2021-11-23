@@ -14,7 +14,7 @@ from pyspark.sql.types import *
 
 from pipeline import PreProcess
 
-from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import SGDClassifier
 import pickle
 import numpy as np
 from sklearn.feature_extraction.text import HashingVectorizer
@@ -26,19 +26,17 @@ hv = HashingVectorizer(lowercase=False)
 clf_pf = None
 def initClassifiers():
 	global clf_pf
-	clf_pf = GaussianNB() # defining globally
+	clf_pf = SGDClassifier(n_jobs=-1) # defining globally
 
 def endClassifiers():
 	pickle.dump(clf_pf, open('NB.pkl', 'wb'))
 	print("pickling sucessful")
 
-def fitNB(df):
+def fitNB(X, y):
 	#clf = GaussianNB()
 	#clf.fit(X, Y)
 	#GaussianNB()
-	X = df.select("vector").rdd
-	Y = df.select("sentiment").rdd
-	clf_pf.partial_fit(X, Y, np.unique(Y))
+	clf_pf.partial_fit(X, y, np.unique(y))
 	print("fit one done")
 	
 	
@@ -46,12 +44,11 @@ def vectorize(df):
 	# joined_df = df.withColumn('joined', array(col('finished')))
 	joined_df = df.withColumn('joined', concat_ws(' ', col('finished')))
 	docs = joined_df.select('joined').collect()
-
 	corpus_batch = [doc['joined'] for doc in docs]
-	# print(len(corpus), corpus)
 
-	vect = hv.fit_transform(corpus_batch)
-	print(vect.shape)
+	vect = hv.transform(corpus_batch).toarray()
+
+	return vect
 
 def process(rdd):
 	# Array of elements of the dataset
@@ -63,10 +60,11 @@ def process(rdd):
 		df = pipe()
 		# vect = hv.fit_transform(df.select('finished').rdd.collect())
 		# print(vect)
-		vectorize(df)
-		# df.show()
-		
-		#fitNB(df)
+		vect = vectorize(df)
+		y = np.array(df.select('sentiment').collect())
+		y = np.reshape(y, (y.shape[0],))
+		# print(vect.shape, y.shape)
+		fitNB(vect, y)
 		#df.show(truncate=False)
 		
 
