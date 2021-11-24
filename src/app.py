@@ -15,7 +15,10 @@ from pyspark.sql.types import *
 from pipeline import PreProcess
 
 import classifier
+import cluster
+
 classifier = classifier.Classifier()
+clustering = cluster.Clustering()
 
 import numpy as np
 from sklearn.feature_extraction.text import HashingVectorizer
@@ -52,6 +55,7 @@ def process(rdd):
 		y = np.reshape(y, (y.shape[0],))
 		# print(vect.shape, y.shape)
 		classifier.fit(vect, y)
+		clustering.fit(vect)
 		#df.show(truncate=False)
 		
 
@@ -79,4 +83,3 @@ if __name__ == "__main__":
 	ssc.stop(stopGraceFully=True)
 	
 	classifier.endClassifiers()
-	
