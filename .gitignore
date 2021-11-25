@@ -133,3 +133,4 @@ test.csv
 train.csv
 src/output.txt
 src/pipeline.txt
+*.pkl
