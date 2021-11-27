@@ -144,7 +144,7 @@ def streamDataset(tcp_connection, dataset_type):    # function to stream a datas
     ]
     for dataset in DATASETS:
         streamCSVFile(tcp_connection, f'{dataset_type}/{dataset}.csv')
-        time.sleep(0.5)
+        time.sleep(5)
 
 
 def streamCSVFile(tcp_connection, input_file):    # stream a CSV file to Spark
