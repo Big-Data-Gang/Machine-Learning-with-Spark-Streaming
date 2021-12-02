@@ -134,3 +134,6 @@ train.csv
 src/output.txt
 src/pipeline.txt
 *.pkl
+
+# Stream file
+stream.py
