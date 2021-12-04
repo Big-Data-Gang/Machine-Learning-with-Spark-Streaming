@@ -36,7 +36,7 @@ def vectorize(df):
 	docs = joined_df.select('joined').collect()
 	corpus_batch = [doc['joined'] for doc in docs]
 
-	vect = hv.transform(corpus_batch).toarray()
+	vect = hv.transform(corpus_batch)
 
 	return vect
 
