@@ -136,4 +136,4 @@ src/pipeline.txt
 *.pkl
 
 # Stream file
-stream.py
+**/stream.py

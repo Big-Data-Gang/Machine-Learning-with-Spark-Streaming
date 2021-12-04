@@ -65,7 +65,7 @@ class Classifier:
         self.X = X
         self.Y = Y
 
-        #self.fit_NB()
+        self.fit_NB()
         self.fitSGD()
         self.fit_PA()
         self.batch += 1
