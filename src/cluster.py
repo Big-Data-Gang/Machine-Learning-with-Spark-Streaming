@@ -21,7 +21,7 @@ class Clustering:
         self.filename = filename
         if self.batch == 0:
             with open(self.filename, 'w') as f:
-                f.write('Batch No,SSE,Silhouette Score\n')
+                f.write('Batch No,SSE,Silhouette Score,Accuracy\n')
                 f.close()
         # if self.batch == 0:
         #     with open(self.filename, 'w') as f:
@@ -37,8 +37,13 @@ class Clustering:
     #         n_clusters=2,
     #         init="k-means++",
     #     )
+    def evaluate(self, actual, pred):
+        newpred = np.where(pred == 1, 4, pred)
+        corrects = np.where(newpred == actual, 1, 0)
+        acc1 = np.count_nonzero(corrects)/len(corrects)
+        return acc1
 
-    def fit(self, X):
+    def fit(self, X, y):
         vect = self.tfidf.fit_transform(X)
         # self.ipca.partial_fit(X)
         # vect = self.ipca.transform(X)
@@ -49,10 +54,14 @@ class Clustering:
         #         f.write(f'{self.batch},{self.km.cluster_centers_[0]},{self.km.cluster_centers_[1]}\n')
         #         f.close()
         pred = self.km.predict(vect)
-        print('Silhouette Score:', silhouette_score(vect, pred))
+        # print('Helloo', len(pred), pred)
+        accuracy = self.evaluate(y, pred)
+        sil_score =  silhouette_score(vect, pred)
+        print('Silhouette Score:', sil_score)
+        print('Accuracy:', accuracy)
 
         with open(self.filename, 'a') as f:
-            f.write(f'{self.batch},{self.km.inertia_},{silhouette_score(vect, pred)}\n')
+            f.write(f'{self.batch},{self.km.inertia_},{sil_score},{accuracy}\n')
             f.close()
 
         self.batch += 1

@@ -62,7 +62,7 @@ def process(rdd):
 		classifier.fit(hv, y)
 
 		# clustering.fit(cv)
-		clustering.fit(hv)
+		clustering.fit(hv, y)
 		#df.show(truncate=False)
 		
 
