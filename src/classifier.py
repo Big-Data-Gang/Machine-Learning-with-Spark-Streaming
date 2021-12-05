@@ -9,26 +9,18 @@ from sklearn import metrics
 import pickle
 import numpy as np
 
-# Columns list
-cols = ['batch no', 'GB', 'NB', 'PA']
-
 class Classifier:
-    def __init__(self):
+    def __init__(self, filename = 'src/performance/supervised.csv'):
         self.batch = 0
+        self.filename = filename
 
     def initClassifiers(self):
         self.GB_classifier = SGDClassifier(n_jobs=-1)
         self.NB_classifier = BernoulliNB()
         self.PA_classifier = PassiveAggressiveClassifier(max_iter=1000, random_state=0)
 
-        # Create list to store data
-        self.data = list()
-
-        # Init dfs to save to csvs
-        # self.csv = None
-
         if self.batch == 0:
-            with open('src/performance/supervised.csv', 'w') as f:
+            with open(self.filename, 'w') as f:
                 f.write('Batch No,SGD Accuracy,NB Accuracy,PA Accuracy\n')
                 f.close()
     
@@ -55,26 +47,18 @@ class Classifier:
         self.GB_classifier.partial_fit(self.X, self.Y, np.unique(self.Y))
         score = self.GB_classifier.score(self.X, self.Y)
         print(f"Batch {self.batch}, GB Accuracy: ", score)
-        # d = {'Accuracy': self.GB_classifier.score(self.X, self.Y), 'Batch': self.batch}
-        # df = pd.DataFrame(data=[[self.batch, self.GB_classifier.score(self.X, self.Y)]], columns=cols)
-        # self.gb_csv = self.gb_csv.append(df)
-        # print("fit one done")
         return score
 
     def fit_NB(self):
         self.NB_classifier.partial_fit(self.X, self.Y, np.unique(self.Y))
         score = self.NB_classifier.score(self.X, self.Y)
         print(f"Batch {self.batch}, NB Accuracy: ", score)
-        # df = pd.DataFrame(data=[[self.batch, self.NB_classifier.score(self.X, self.Y)]], columns=cols)
-        # self.nb_csv = self.nb_csv.append(df)
         return score
 
     def fit_PA(self):
         self.PA_classifier.partial_fit(self.X, self.Y, np.unique(self.Y))
         score = self.PA_classifier.score(self.X, self.Y)
         print(f"Batch {self.batch}, PA Accuracy: ", score)
-        # df = pd.DataFrame(data=[[self.batch, self.PA_classifier.score(self.X, self.Y)]], columns=cols)
-        # self.pa_csv = self.pa_csv.append(df)
         return score
 
     def fit(self, X, Y):
@@ -84,13 +68,9 @@ class Classifier:
         scoreSGD = self.fitSGD()
         scoreNB = self.fit_NB()
         scorePA = self.fit_PA()
-        
-        print('Hi', scoreSGD, scoreNB, scorePA)
 
-        with open('src/performance/supervised.csv', 'a') as f:
-            print('In file')
+        with open(self.filename, 'a') as f:
             f.write(f'{self.batch},{scoreSGD},{scoreNB},{scorePA}\n')
             f.close()
 
-        # self.data.append([self.batch, self.fitSGD(), self.fit_NB(), self.fit_PA()])
         self.batch += 1

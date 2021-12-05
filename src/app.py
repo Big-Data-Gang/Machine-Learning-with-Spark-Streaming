@@ -60,7 +60,7 @@ def process(rdd):
 		y = np.reshape(y, (y.shape[0],))
 		# print(vect.shape, y.shape)
 		classifier.fit(hv, y)
-		
+
 		# clustering.fit(cv)
 		clustering.fit(hv)
 		#df.show(truncate=False)
@@ -90,3 +90,4 @@ if __name__ == "__main__":
 	ssc.stop(stopGraceFully=True)
 	
 	classifier.endClassifiers()
+	clustering.endClustering()
