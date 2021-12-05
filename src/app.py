@@ -21,10 +21,11 @@ classifier = classifier.Classifier()
 clustering = cluster.Clustering()
 
 import numpy as np
-from sklearn.feature_extraction.text import HashingVectorizer
+from sklearn.feature_extraction.text import HashingVectorizer, CountVectorizer
 
 # Create HashingVectorizer instance
 hv = HashingVectorizer(lowercase=False, alternate_sign = False)
+cv = CountVectorizer(lowercase=False)
 
 # Setting np seed to get reproducible models
 np.random.seed(5)
@@ -36,9 +37,11 @@ def vectorize(df):
 	docs = joined_df.select('joined').collect()
 	corpus_batch = [doc['joined'] for doc in docs]
 
-	vect = hv.transform(corpus_batch).toarray()
+	hvect = hv.transform(corpus_batch).toarray()
+	# cvect = cv.transform(corpus_batch)
 
-	return vect
+	# return (hvect, cvect)
+	return hvect
 
 def process(rdd):
 	# Array of elements of the dataset
@@ -50,12 +53,15 @@ def process(rdd):
 		df = pipe()
 		# vect = hv.fit_transform(df.select('finished').rdd.collect())
 		# print(vect)
-		vect = vectorize(df)
+		# hv, cv = vectorize(df)
+		hv = vectorize(df)
+
 		y = np.array(df.select('sentiment').collect())
 		y = np.reshape(y, (y.shape[0],))
 		# print(vect.shape, y.shape)
-		classifier.fit(vect, y)
-		clustering.fit(vect)
+		classifier.fit(hv, y)
+		# clustering.fit(cv)
+		clustering.fit(hv)
 		#df.show(truncate=False)
 		
 
