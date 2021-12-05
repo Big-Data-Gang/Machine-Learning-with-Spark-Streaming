@@ -3,6 +3,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 import pandas as pd
 import numpy as np 
 from sklearn.metrics import silhouette_score
+from sklearn.decomposition import IncrementalPCA
 
 # cols = ['batch no', 'accuracy']
 
@@ -16,6 +17,7 @@ class Clustering:
             init="k-means++",
         )
         self.tfidf = TfidfTransformer()
+        self.ipca = IncrementalPCA(n_components=2)
         self.filename = filename
         if self.batch == 0:
             with open(self.filename, 'w') as f:
@@ -38,6 +40,8 @@ class Clustering:
 
     def fit(self, X):
         vect = self.tfidf.fit_transform(X)
+        # self.ipca.partial_fit(X)
+        # vect = self.ipca.transform(X)
         self.km.partial_fit(vect)
 
         print('Cluster centers:', self.km.cluster_centers_)
