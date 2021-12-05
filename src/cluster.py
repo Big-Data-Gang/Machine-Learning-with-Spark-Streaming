@@ -68,11 +68,11 @@ class Clustering:
         pickle.dump(self.km, open('KMeans.pkl', 'wb'))
         print('Pickled KMeans')
         with open('./src/performance/unsupervised-centroids.tsv', 'w') as f:
-            for i in clusters:
+            for i, centroid in enumerate(clusters):
                 f.write(f'Cluster{i}:\n')
-                for j in i:
+                for j in centroid:
                     f.write(f'{j}\t')
-                f.write('\n')
+                f.write('\n\n\n\n')
 
     
 
