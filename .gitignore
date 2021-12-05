@@ -137,3 +137,6 @@ src/pipeline.txt
 
 # Stream file
 **/stream.py
+
+stream.py 
+supervised.csv
