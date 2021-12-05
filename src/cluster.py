@@ -65,7 +65,7 @@ class Clustering:
     def endClustering(self):
         clusters = self.getClusterCenters()
         pickle.dump(clusters, open('clustercenters.pkl', 'wb'))
-        with open('./src/performance/unsupervised.tsv', 'w') as f:
+        with open('./src/performance/unsupervised-centroids.tsv', 'w') as f:
             for i in clusters:
                 f.write(f'Cluster{i}:\n')
                 for j in i:
