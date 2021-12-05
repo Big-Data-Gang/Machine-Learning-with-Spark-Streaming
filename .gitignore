@@ -137,5 +137,9 @@ src/pipeline.txt
 # Stream file
 **/stream.py
 
+*.pkl
+
 stream.py 
 supervised.csv
+
+/src/clustering_plots/training
