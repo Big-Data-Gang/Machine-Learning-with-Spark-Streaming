@@ -142,4 +142,5 @@ src/pipeline.txt
 stream.py 
 supervised.csv
 
-/src/clustering_plots/training
+# /src/clustering_plots/training
+*.png
