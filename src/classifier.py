@@ -28,7 +28,7 @@ class Classifier:
         # self.csv = None
 
         if self.batch == 0:
-            with open('src/supervised.csv', 'w') as f:
+            with open('src/performance/supervised.csv', 'w') as f:
                 f.write('Batch No,SGD Accuracy,NB Accuracy,PA Accuracy\n')
                 f.close()
     
@@ -87,7 +87,7 @@ class Classifier:
         
         print('Hi', scoreSGD, scoreNB, scorePA)
 
-        with open('src/supervised.csv', 'a') as f:
+        with open('src/performance/supervised.csv', 'a') as f:
             print('In file')
             f.write(f'{self.batch},{scoreSGD},{scoreNB},{scorePA}\n')
             f.close()
