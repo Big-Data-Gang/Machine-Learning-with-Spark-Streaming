@@ -37,7 +37,7 @@ def vectorize(df):
 	docs = joined_df.select('joined').collect()
 	corpus_batch = [doc['joined'] for doc in docs]
 
-	hvect = hv.transform(corpus_batch).toarray()
+	hvect = hv.transform(corpus_batch)
 	# cvect = cv.transform(corpus_batch)
 
 	# return (hvect, cvect)
@@ -60,6 +60,7 @@ def process(rdd):
 		y = np.reshape(y, (y.shape[0],))
 		# print(vect.shape, y.shape)
 		classifier.fit(hv, y)
+		
 		# clustering.fit(cv)
 		clustering.fit(hv)
 		#df.show(truncate=False)
