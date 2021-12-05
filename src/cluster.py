@@ -2,6 +2,7 @@ from sklearn.cluster import KMeans, MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfTransformer
 import pandas as pd
 import numpy as np 
+from sklearn.metrics import silhouette_score
 
 # cols = ['batch no', 'accuracy']
 
@@ -16,7 +17,10 @@ class Clustering:
         )
         self.tfidf = TfidfTransformer()
         self.filename = filename
-
+        if self.batch == 0:
+            with open(self.filename, 'w') as f:
+                f.write('Batch No,Silhouette Score\n')
+                f.close()
         # if self.batch == 0:
         #     with open(self.filename, 'w') as f:
         #         f.write('Batch No,Centroid1,Centroid2\n')
@@ -35,12 +39,20 @@ class Clustering:
     def fit(self, X):
         vect = self.tfidf.fit_transform(X)
         self.km.partial_fit(vect)
+
         print('Cluster centers:', self.km.cluster_centers_)
         # with open(self.filename, 'a') as f:
         #         f.write(f'{self.batch},{self.km.cluster_centers_[0]},{self.km.cluster_centers_[1]}\n')
         #         f.close()
+        pred = self.km.predict(vect)
+        print('Silhouette Score:', silhouette_score(vect, pred))
+
+        with open(self.filename, 'a') as f:
+            f.write(f'{self.batch},{silhouette_score(vect, pred)}\n')
+            f.close()
 
         self.batch += 1
+        self.endClustering()
         # self.data.append(self.km.cluster_centers_)
 
     def getClusterCenters(self):
@@ -48,12 +60,12 @@ class Clustering:
 
     def endClustering(self):
         clusters = self.getClusterCenters()
-        pickle.dumps(clusters, open('clustercenters.pkl', 'wb'))
-        with open('/src/performance/unsupervised', 'w') as f:
+        pickle.dump(clusters, open('clustercenters.pkl', 'wb'))
+        with open('./src/performance/unsupervised.tsv', 'w') as f:
             for i in clusters:
                 f.write(f'Cluster{i}:\n')
                 for j in i:
-                    f.write(f'j\t')
+                    f.write(f'{j}\t')
                 f.write('\n')
 
     

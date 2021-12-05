@@ -72,5 +72,6 @@ class Classifier:
         with open(self.filename, 'a') as f:
             f.write(f'{self.batch},{scoreSGD},{scoreNB},{scorePA}\n')
             f.close()
-
+        # Also write models
+        self.endClassifiers()
         self.batch += 1
