@@ -21,7 +21,7 @@ class Clustering:
         self.filename = filename
         if self.batch == 0:
             with open(self.filename, 'w') as f:
-                f.write('Batch No,Silhouette Score,Accuracy\n')
+                f.write('Batch No,SSE,Silhouette Score,Accuracy\n')
                 f.close()
         # if self.batch == 0:
         #     with open(self.filename, 'w') as f:
@@ -61,7 +61,7 @@ class Clustering:
         print('Accuracy:', accuracy)
 
         with open(self.filename, 'a') as f:
-            f.write(f'{self.batch},{sil_score},{accuracy}\n')
+            f.write(f'{self.batch},{self.km.inertia_},{sil_score},{accuracy}\n')
             f.close()
 
         self.batch += 1
