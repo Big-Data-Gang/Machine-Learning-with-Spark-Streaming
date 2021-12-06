@@ -137,11 +137,11 @@ src/pipeline.txt
 # Stream file
 **/stream.py
 
-clustercenters.pkl
-GB.pkl
-KMeans.pkl
-NB.pkl
-PA.pkl
+# clustercenters.pkl
+# GB.pkl
+# KMeans.pkl
+# NB.pkl
+# PA.pkl
 
 stream.py 
 supervised.csv
