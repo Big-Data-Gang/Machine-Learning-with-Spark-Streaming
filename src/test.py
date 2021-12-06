@@ -34,7 +34,7 @@ pa = pickle.load(open(f'models/{sys.argv[1]}/PA.pkl', 'rb'))
 sgd = pickle.load(open(f'models/{sys.argv[1]}/GB.pkl', 'rb'))
 
 # File to write
-path = 'src/performance/testing/final-scores.csv'
+path = 'src/performance/testing/final-scores-20000.csv'
 # Write Headers
 with open(path, 'w') as file:
     file.write('Batch,NB Score,NB F1,NB Precision,NB Recall,PA Score,PA F1,PA Precision,PA Recall,SGD Score,SGD F1,SGD Precision,SGD Recall\n')
