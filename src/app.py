@@ -56,7 +56,7 @@ def process(rdd):
 		classifier.fit(hv, y)
 
 		# Uncomment only 1 of these lines NOT BOTH. plot=True and False used as a flag for plotting clusters of each batch 
-		# clustering.fit(hv, y, plot=True)
+		# clustering.fit(hv, y, plot=False)
 		clustering.fit(hv, y, plot=True)
 		
 
