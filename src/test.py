@@ -29,12 +29,12 @@ hv = HashingVectorizer(lowercase=False, alternate_sign = False)
 cv = CountVectorizer(lowercase=False)
 
 # Load Models
-nb = pickle.load('../models/2500/NB.pkl')
-pa = pickle.load('../models/2500/PA.pkl')
-sgd = pickle.load('../models/2500/GB.pkl')
+nb = pickle.load(open('models/2500/NB.pkl', 'rb'))
+pa = pickle.load(open('models/2500/PA.pkl', 'rb'))
+sgd = pickle.load(open('models/2500/GB.pkl', 'rb'))
 
 # File to write
-path = '../src/performance/testing/final-scores.csv'
+path = 'src/performance/testing/final-scores.csv'
 # Write Headers
 with open(path, 'w') as file:
     file.write('Batch,NB Score,NB F1,NB Precision,NB Recall,PA Score,PA F1,PA Precision,PA Recall,SGD Score,SGD F1,SGD Precision,SGD Recall\n')
@@ -53,31 +53,31 @@ def score(X, y):
     # Naive Bayes
     nbScore = nb.score(X, y)
     y_pred_NB = nb.predict(X)
-    nbF1 = f1_score(y, y_pred_NB)
-    nbPrec = precision_score(y, y_pred_NB)
-    nbRec = recall_score(y, y_pred_NB)
+    nbF1 = f1_score(y, y_pred_NB, pos_label=4)
+    nbPrec = precision_score(y, y_pred_NB, pos_label=4)
+    nbRec = recall_score(y, y_pred_NB, pos_label=4)
 
     # PA
     paScore = pa.score(X, y)
     y_pred_pa = pa.predict(X)
-    paF1 = f1_score(y, y_pred_pa)
-    paPrec = precision_score(y, y_pred_pa)
-    paRec = recall_score(y, y_pred_pa)
+    paF1 = f1_score(y, y_pred_pa, pos_label=4)
+    paPrec = precision_score(y, y_pred_pa, pos_label=4)
+    paRec = recall_score(y, y_pred_pa, pos_label=4)
 
     # SGD
     sgdScore = sgd.score(X, y)
     y_pred_sgd = sgd.predict(X)
-    sgdF1 = f1_score(y, y_pred_sgd)
-    sgdPrec = precision_score(y, y_pred_sgd)
-    sgdRec = recall_score(y, y_pred_sgd)
+    sgdF1 = f1_score(y, y_pred_sgd, pos_label=4)
+    sgdPrec = precision_score(y, y_pred_sgd, pos_label=4)
+    sgdRec = recall_score(y, y_pred_sgd, pos_label=4)
 
     with open(path, 'a') as file:
-        file.write(f'{batch},{nbScore},{nbF1},{nbPrec},{nbRec},{paScore},{paF1},{paPrec},{paRec},{sgdScore},{sgdF1},{sgdPrec},{sgdRec}\n')
+        file.write(f"{batch},{nbScore},{nbF1},{nbPrec},{nbRec},{paScore},{paF1},{paPrec},{paRec},{sgdScore},{sgdF1},{sgdPrec},{sgdRec}\n")
         file.close()
 
 
 def vectorize(df):
-	# joined_df = df.withColumn('joined', array(col('finished')))
+    # joined_df = df.withColumn('joined', array(col('finished')))
 	joined_df = df.withColumn('joined', concat_ws(' ', col('finished')))
 	docs = joined_df.select('joined').collect()
 	corpus_batch = [doc['joined'] for doc in docs]
@@ -103,8 +103,7 @@ def process(rdd):
 
 		y = np.array(df.select('sentiment').collect())
 		y = np.reshape(y, (y.shape[0],))
-        score(hv, y)
-		
+		score(hv, y)
 
 if __name__ == "__main__":
 	sc = SparkContext(appName="tweetStream")
