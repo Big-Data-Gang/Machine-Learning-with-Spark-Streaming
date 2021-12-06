@@ -44,15 +44,20 @@ class Clustering:
         reduced = svd.fit_transform(X)
         reduced_centroids = svd.fit_transform(self.getClusterCenters())
 
-        if self.batch != 0:      
+        if self.batch == 0:      
             plt.clf()
 
-        print('Hi', len(reduced[pred==0]), reduced[pred==0])
-        print('Hi2', len(reduced[pred==1]), reduced[pred==1])
+        print('No. of points in cluster 0', len(reduced[pred==0]))
+        print('No. of points in cluster 1', len(reduced[pred==1]))
 
-        plt.scatter(reduced[pred==0, 0], reduced[pred==0, 1], s=50, c='red', label ='Cluster 1')
-        plt.scatter(reduced[pred==1, 0], reduced[pred==1, 1], s=50, c='blue', label ='Cluster 2')
-        plt.scatter(reduced_centroids[:, 0], reduced_centroids[:, 1], s=200, c='black', label = 'Centroids')
+        plt.scatter(reduced[pred==0, 0], reduced[pred==0, 1], s=10, c='red', label ='Cluster 1')
+        plt.scatter(reduced[pred==1, 0], reduced[pred==1, 1], s=10, c='blue', label ='Cluster 2')
+
+        if self.batch == 303:
+            plt.scatter(reduced_centroids[:, 0], reduced_centroids[:, 1], s=50, c='black', label = 'Centroids')
+        else:
+            plt.scatter(reduced_centroids[:, 0], reduced_centroids[:, 1], s=300, c='yellow', label = 'Centroids')
+
         plt.title(f'Batch {self.batch} clusters')
         fig = plt.gcf()
         fig.savefig(f'src/clustering_plots/training/batch{self.batch}.png', format ="png")
