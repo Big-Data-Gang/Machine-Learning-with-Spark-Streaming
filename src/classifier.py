@@ -11,7 +11,7 @@ import pickle
 import numpy as np
 
 class Classifier:
-    def __init__(self, filename = 'src/performance/supervised.csv'):
+    def __init__(self, filename = 'src/performance/training/supervised.csv'):
         self.batch = 0
         self.filename = filename
 
@@ -34,15 +34,6 @@ class Classifier:
 
         pickle.dump(self.PA_classifier, open('PA.pkl', 'wb'))
         print("pickling PA successful")
-
-        # Save the csv files
-        # batches = len(self.gb_csv)
-        # self.gb_csv.to_csv(f'./src/performance/gb-{batches}.csv')
-        # self.nb_csv.to_csv(f'./src/performance/nb-{batches}.csv')
-        # self.pa_csv.to_csv(f'./src/performance/pa-{batches}.csv')
-        # self.csv = pd.DataFrame(data=self.data, columns=cols)
-        # self.csv.to_csv('./performance/supervised.csv', index=False)
-        # self.batch += 1
 
     def fitSGD(self):
         self.GB_classifier.partial_fit(self.X, self.Y, np.unique(self.Y))
