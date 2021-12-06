@@ -11,7 +11,7 @@ import pickle
 import numpy as np
 
 class Classifier:
-    def __init__(self, filename = 'src/performance/training/supervised.csv'):
+    def __init__(self, filename = 'src/performance/training/supervised-10000.csv'):
         self.batch = 0
         self.filename = filename
 
