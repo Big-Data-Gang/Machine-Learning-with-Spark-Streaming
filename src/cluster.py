@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import pickle 
 
 class Clustering:
-    def __init__(self, filename = 'src/performance/training/unsupervised-10000.csv'):
+    def __init__(self, filename = 'src/performance/training/unsupervised-20000.csv'):
         self.batch = 0
         self.km = MiniBatchKMeans(
             n_clusters=2,
