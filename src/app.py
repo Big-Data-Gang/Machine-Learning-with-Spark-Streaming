@@ -38,9 +38,6 @@ def vectorize(df):
 	corpus_batch = [doc['joined'] for doc in docs]
 
 	hvect = hv.transform(corpus_batch)
-	# cvect = cv.transform(corpus_batch)
-
-	# return (hvect, cvect)
 	return hvect
 
 def process(rdd):
@@ -52,19 +49,15 @@ def process(rdd):
 		pipe = PreProcess(df)
 		df = pipe()
 		# vect = hv.fit_transform(df.select('finished').rdd.collect())
-		# print(vect)
-		# hv, cv = vectorize(df)
 		hv = vectorize(df)
 
 		y = np.array(df.select('sentiment').collect())
 		y = np.reshape(y, (y.shape[0],))
-		# print(vect.shape, y.shape)
 		classifier.fit(hv, y)
 
-		# clustering.fit(cv)
+		# Uncomment only 1 of these lines NOT BOTH. plot=True and False used as a flag for plotting clusters of each batch 
 		# clustering.fit(hv, y, plot=True)
 		clustering.fit(hv, y, plot=True)
-		#df.show(truncate=False)
 		
 
 if __name__ == "__main__":

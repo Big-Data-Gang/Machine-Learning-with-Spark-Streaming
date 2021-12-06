@@ -6,12 +6,11 @@ from sklearn.metrics import silhouette_score
 from sklearn.decomposition import IncrementalPCA, TruncatedSVD
 import matplotlib.pyplot as plt
 
-# cols = ['batch no', 'accuracy']
 
 import pickle 
 
 class Clustering:
-    def __init__(self, filename = 'src/performance/unsupervised.csv'):
+    def __init__(self, filename = 'src/performance/training/unsupervised.csv'):
         self.batch = 0
         self.km = MiniBatchKMeans(
             n_clusters=2,
@@ -29,10 +28,6 @@ class Clustering:
         #         f.write('Batch No,Centroid1,Centroid2\n')
         #         f.close()
 
-        # self.batch = 0
-        # self.csv = None
-        # self.data = list()
-
     # def initCluster(self): 
     #     km = MiniBatchKMeans(
     #         n_clusters=2,
@@ -49,11 +44,6 @@ class Clustering:
         reduced = svd.fit_transform(X)
         reduced_centroids = svd.fit_transform(self.getClusterCenters())
 
-        # print('Hello', pred)
-        # print(pred==0)
-        # print(pred==1)
-        # print('Hiiii', reduced, '\n', reduced[pred==0])
-
         if self.batch != 0:      
             plt.clf()
 
@@ -66,29 +56,18 @@ class Clustering:
         plt.title(f'Batch {self.batch} clusters')
         fig = plt.gcf()
         fig.savefig(f'src/clustering_plots/training/batch{self.batch}.png', format ="png")
-        # print('Hello')
-        # for i in zip(pred, reduced):
-        #     print(i)
 
     def fit(self, X, y, plot=False):
-        vect = X
-        # vect = self.tfidf.fit_transform(X)
-        # self.ipca.partial_fit(X)
-        # vect = self.ipca.transform(X)
-        self.km.partial_fit(vect)
+        self.km.partial_fit(X)
 
         print('Cluster centers:', self.km.cluster_centers_)
-        # with open(self.filename, 'a') as f:
-        #         f.write(f'{self.batch},{self.km.cluster_centers_[0]},{self.km.cluster_centers_[1]}\n')
-        #         f.close()
-        pred = self.km.predict(vect)
+        pred = self.km.predict(X)
 
         if plot:
-            self.plot(vect,pred)
+            self.plot(X,pred)
 
-        # print('Helloo', len(pred), pred)
         accuracy = self.evaluate(y, pred)
-        sil_score =  silhouette_score(vect, pred)
+        sil_score =  silhouette_score(X, pred)
         print('Silhouette Score:', sil_score)
         print('Accuracy:', accuracy)
 
@@ -98,7 +77,6 @@ class Clustering:
 
         self.batch += 1
         self.endClustering()
-        # self.data.append(self.km.cluster_centers_)
 
     def getClusterCenters(self):
         return self.km.cluster_centers_
@@ -108,12 +86,12 @@ class Clustering:
         pickle.dump(clusters, open('clustercenters.pkl', 'wb'))
         pickle.dump(self.km, open('KMeans.pkl', 'wb'))
         print('Pickled KMeans')
-        with open('./src/performance/unsupervised-centroids.tsv', 'w') as f:
-            for i, centroid in enumerate(clusters):
-                f.write(f'Cluster{i}:\n')
-                for j in centroid:
-                    f.write(f'{j}\t')
-                f.write('\n\n\n\n')
+        # with open('./src/performance/unsupervised-centroids.tsv', 'w') as f:
+        #     for i, centroid in enumerate(clusters):
+        #         f.write(f'Cluster{i}:\n')
+        #         for j in centroid:
+        #             f.write(f'{j}\t')
+        #         f.write('\n\n\n\n')
 
     
 
