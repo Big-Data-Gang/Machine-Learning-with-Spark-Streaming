@@ -13,7 +13,7 @@ from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from sklearn.metrics import f1_score, precision_score, recall_score
 from pipeline import PreProcess
-
+import sys
 import classifier
 import cluster
 import pickle
@@ -29,9 +29,9 @@ hv = HashingVectorizer(lowercase=False, alternate_sign = False)
 cv = CountVectorizer(lowercase=False)
 
 # Load Models
-nb = pickle.load(open('models/2500/NB.pkl', 'rb'))
-pa = pickle.load(open('models/2500/PA.pkl', 'rb'))
-sgd = pickle.load(open('models/2500/GB.pkl', 'rb'))
+nb = pickle.load(open(f'models/{sys.argv[1]}/NB.pkl', 'rb'))
+pa = pickle.load(open(f'models/{sys.argv[1]}/PA.pkl', 'rb'))
+sgd = pickle.load(open(f'models/{sys.argv[1]}/GB.pkl', 'rb'))
 
 # File to write
 path = 'src/performance/testing/final-scores.csv'

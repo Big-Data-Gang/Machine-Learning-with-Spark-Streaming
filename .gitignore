@@ -148,3 +148,5 @@ supervised.csv
 
 # /src/clustering_plots/training
 *.png
+
+*output.txt
