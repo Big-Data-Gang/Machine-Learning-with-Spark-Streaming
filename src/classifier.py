@@ -48,9 +48,9 @@ class Classifier:
         self.GB_classifier.partial_fit(self.X, self.Y, np.unique(self.Y))
         score = self.GB_classifier.score(self.X, self.Y)
         y_pred = self.GB_classifier.predict(self.X)
-        f1_SGD = f1_score(self.Y, y_pred)
-        prec_SGD = precision_score(self.Y, y_pred)
-        rec_SGD = recall_score(self.Y, y_pred)
+        f1_SGD = f1_score(self.Y, y_pred, pos_label=4)
+        prec_SGD = precision_score(self.Y, y_pred, pos_label=4)
+        rec_SGD = recall_score(self.Y, y_pred, pos_label=4)
         print(f"Batch {self.batch}, GB Accuracy:  {score}, F1 Score: {f1_SGD}, Precision: {prec_SGD}, Recall: {rec_SGD}")
         return score, f1_SGD, prec_SGD, rec_SGD
 
@@ -59,9 +59,9 @@ class Classifier:
         score = self.NB_classifier.score(self.X, self.Y)
         print(f"Batch {self.batch}, NB Accuracy: ", score)
         y_pred = self.NB_classifier.predict(self.X)
-        f1_NB = f1_score(self.Y, y_pred)
-        prec_NB = precision_score(self.Y, y_pred)
-        rec_NB = recall_score(self.Y, y_pred)
+        f1_NB = f1_score(self.Y, y_pred, pos_label=4)
+        prec_NB = precision_score(self.Y, y_pred, pos_label=4)
+        rec_NB = recall_score(self.Y, y_pred, pos_label=4)
         print(f"Batch {self.batch}, GB Accuracy:  {score}, F1 Score: {f1_NB}, Precision: {prec_NB}, Recall: {rec_NB}")
         return score, f1_NB, prec_NB, rec_NB
 
@@ -70,9 +70,9 @@ class Classifier:
         score = self.PA_classifier.score(self.X, self.Y)
         print(f"Batch {self.batch}, PA Accuracy: ", score)
         y_pred = self.PA_classifier.predict(self.X)
-        f1_PA = f1_score(self.Y, y_pred)
-        prec_PA = precision_score(self.Y, y_pred)
-        rec_PA = recall_score(self.Y, y_pred)
+        f1_PA = f1_score(self.Y, y_pred, pos_label=4)
+        prec_PA = precision_score(self.Y, y_pred, pos_label=4)
+        rec_PA = recall_score(self.Y, y_pred, pos_label=4)
         print(f"Batch {self.batch}, GB Accuracy:  {score}, F1 Score: {f1_PA}, Precision: {prec_PA}, Recall: {rec_PA}")
         return score, f1_PA, prec_PA, rec_PA
 
