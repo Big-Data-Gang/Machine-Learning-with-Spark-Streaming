@@ -74,7 +74,7 @@ def score(X, y):
     with open(path, 'a') as file:
         file.write(f"{batch},{nbScore},{nbF1},{nbPrec},{nbRec},{paScore},{paF1},{paPrec},{paRec},{sgdScore},{sgdF1},{sgdPrec},{sgdRec}\n")
         file.close()
-
+    batch += 1
 
 def vectorize(df):
     # joined_df = df.withColumn('joined', array(col('finished')))
