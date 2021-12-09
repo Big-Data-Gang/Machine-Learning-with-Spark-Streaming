@@ -11,6 +11,6 @@ Team:
 
 References - [Intructions](https://cloud-computing-big-data.github.io/mlss.html) and [files](https://drive.google.com/drive/folders/1hKe06r4TYxqQOwEOUrk6i9e15Vt2EZGC)
 
-* IMPORTANT:
+### IMPORTANT:
 
 Refer [Usage.md](/docs/Usage.md) for instructions to running the script
